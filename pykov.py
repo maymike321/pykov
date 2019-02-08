@@ -6,11 +6,11 @@ class Pykov:
     # Source: string[], the source to generate a markov chain off of.
     def setSource(self, source):
         self.source = source
-        for x in range(len(self.source) - self.order):
+        for x in range(len(self.source) - self.order + 1):
             nextWord = None
-            if len(self.source) != x + self.order:
+            if x + self.order < len(self.source):
                 nextWord = self.source[x + self.order]
-                
+
             words = self.source[x : x + self.order]
 
             markovLink = next((x for x in self.__links if x.words == words), None)
