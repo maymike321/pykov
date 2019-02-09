@@ -8,6 +8,9 @@ class Pykov:
     # Source: string[], the source to generate a markov chain off of.
     def setSource(self, source):
         self.source = source
+        self.__processSource()
+
+    def __processSource(self):
         for x in range(len(self.source) - self.order + 1):
             nextWord = None
             if x + self.order < len(self.source):
@@ -21,12 +24,13 @@ class Pykov:
                 if possibleFollowUp is not None:
                     possibleFollowUp.amount += 1
                 else:
-                    if nextWord is not none:
+                    if nextWord is not None:
                         markovLink.possibleFollowUps.append(PossibleFollowUp(nextWord))
             else:
                 possibleFollowUps = [PossibleFollowUp(nextWord)] if nextWord is not None else []
                 markovLink = MarkovLink(words, possibleFollowUps)
                 self.__links.append(markovLink)
+
 
 # Represents one link of a markov chain.  In this context it is a series of words followed by each word that follows it and with what probability.
 class MarkovLink:
