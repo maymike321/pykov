@@ -1,3 +1,5 @@
+from functools import reduce
+
 class Pykov:
     # Order: int, how many words prior are used to determine the next word
     def __init__(self, order):
@@ -19,17 +21,21 @@ class Pykov:
                 if possibleFollowUp is not None:
                     possibleFollowUp.amount += 1
                 else:
-                    markovLink.possibleFollowUps.append(PossibleFollowUp(nextWord))
+                    if nextWord is not none:
+                        markovLink.possibleFollowUps.append(PossibleFollowUp(nextWord))
             else:
-                markovLink = MarkovLink(words, [PossibleFollowUp(nextWord)])
+                possibleFollowUps = [PossibleFollowUp(nextWord)] if nextWord is not None else []
+                markovLink = MarkovLink(words, possibleFollowUps)
                 self.__links.append(markovLink)
-
 
 # Represents one link of a markov chain.  In this context it is a series of words followed by each word that follows it and with what probability.
 class MarkovLink:
     def __init__(self, words, possibleFollowUps = []):
         self.words = words
         self.possibleFollowUps = possibleFollowUps
+    @property
+    def totalAmount(self):
+        return reduce(lambda a,b : a + b.amount, self.possibleFollowUps, 0)
 
 # Represents a possible follow up word to a series of words.  Has a word along with the number of times it is supposed to follow the next word.
 class PossibleFollowUp:
