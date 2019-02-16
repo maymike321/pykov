@@ -6,21 +6,27 @@ class Pykov:
         self.__links = []
         self.order = order
     # Source: string[], the source to generate a markov chain off of.
+    # Each "phrase" is an element in the array.  Phrases do not influence eachother in terms of probabilities.
+    # If the source is a continuous block of text (such as a book), then the source should be one element.
     def setSource(self, source):
         self.source = source
         self.__processSource()
 
     def __processSource(self):
-        for x in range(len(self.source) - self.order + 1):
+        for phrase in self.source:
+            self.__processPhrase(phrase.split())
+
+    def __processPhrase(self, phrase):
+        for wordPos in range(len(phrase) - self.order + 1):
             nextWord = None
-            if x + self.order < len(self.source):
-                nextWord = self.source[x + self.order]
-
-            words = self.source[x : x + self.order]
-
-            markovLink = next((x for x in self.__links if x.words == words), None)
+            if wordPos + self.order < len(phrase):
+                nextWord = phrase[wordPos + self.order]
+                
+            words = phrase[wordPos : wordPos + self.order]
+            
+            markovLink = next((link for link in self.__links if link.words == words), None)
             if markovLink is not None:
-                possibleFollowUp = next((x for x in markovLink.possibleFollowUps if x.word == nextWord), None)
+                possibleFollowUp = next((followUp for followUp in markovLink.possibleFollowUps if followUp.word == nextWord), None)
                 if possibleFollowUp is not None:
                     possibleFollowUp.amount += 1
                 else:
@@ -30,11 +36,24 @@ class Pykov:
                 possibleFollowUps = [PossibleFollowUp(nextWord)] if nextWord is not None else []
                 markovLink = MarkovLink(words, possibleFollowUps)
                 self.__links.append(markovLink)
+                
+    # For debugging purposes only
+    def __printResult(self):
+        for link in self.__links:
+            print("Link:")
+            print("\tWords:")
+            for word in link.words:
+                print("\t\t" + word)
+            print("\tPossible follow ups:")
+            for possibleFollowUp in link.possibleFollowUps:
+                print("\t\tWord: " + possibleFollowUp.word)
+                print("\t\tAmount: " + str(possibleFollowUp.amount))
+
 
 
 # Represents one link of a markov chain.  In this context it is a series of words followed by each word that follows it and with what probability.
 class MarkovLink:
-    def __init__(self, words, possibleFollowUps = []):
+    def __init__(self, words, possibleFollowUps):
         self.words = words
         self.possibleFollowUps = possibleFollowUps
     @property
