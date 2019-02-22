@@ -10,7 +10,7 @@ class PykovTests(unittest.TestCase):
     def test_when_given_single_phrase_parses_correctly(self):
         source = ["The big bad dog was a big bad dog who was a big bad dog who was bad."]
         self.markovGenerator.set_source(source)
-        expected = [
+        expectedLinks = [
             MarkovLink(["The", "big", "bad"], [PossibleFollowUp("dog", 1)]),
             MarkovLink(["big", "bad", "dog"], [PossibleFollowUp("was", 1), PossibleFollowUp("who", 2)]),
             MarkovLink(["bad", "dog", "was"], [PossibleFollowUp("a", 1)]),
@@ -22,14 +22,18 @@ class PykovTests(unittest.TestCase):
             MarkovLink(["who", "was", "a"], [PossibleFollowUp("big", 1)]),
             MarkovLink(["who", "was", "bad."], []),
         ]
-        self.assertEqual(expected, self.markovGenerator._Pykov__links)
+        expectedStartingWords = ["The"]
+        expectedEndingWords = ["bad."]
+        self.assertEqual(expectedLinks, self.markovGenerator._Pykov__links)
+        self.assertEqual(expectedStartingWords, self.markovGenerator._Pykov__startingWords)
+        self.assertEqual(expectedEndingWords, self.markovGenerator._Pykov__endingWords)
     def test_when_given_multiple_phrases_parses_correctly(self):
         source = [
             "This is the first phrase.",
             "This is the second phrase.  It shouldn't influence the first phrase."
         ]
         self.markovGenerator.set_source(source)
-        expected = [
+        expectedLinks = [
             MarkovLink(["This", "is", "the"], [PossibleFollowUp("first", 1), PossibleFollowUp("second", 1)]),
             MarkovLink(["is", "the", "first"], [PossibleFollowUp("phrase.", 1)]),
             MarkovLink(["the", "first", "phrase."], []),
@@ -41,7 +45,11 @@ class PykovTests(unittest.TestCase):
             MarkovLink(["shouldn't", "influence", "the"], [PossibleFollowUp("first", 1)]),
             MarkovLink(["influence", "the", "first"], [PossibleFollowUp("phrase.", 1)]),
         ]
-        self.assertEqual(expected, self.markovGenerator._Pykov__links)
+        expectedStartingWords = ["This", "It"]
+        expectedEndingWords = ["phrase."]
+        self.assertEqual(expectedLinks, self.markovGenerator._Pykov__links)
+        self.assertEqual(expectedStartingWords, self.markovGenerator._Pykov__startingWords)
+        self.assertEqual(expectedEndingWords, self.markovGenerator._Pykov__endingWords)
 
 class MarkovLinkTests(unittest.TestCase):
     def test_calculates_total_amount_properly(self):
