@@ -1,5 +1,7 @@
 import unittest
-from pykov import Pykov, MarkovLink, PossibleFollowUp
+from pykov import Pykov
+from markov_link import MarkovLink
+from possible_follow_up import PossibleFollowUp
 
 class PykovTests(unittest.TestCase):
     def setUp(self):
@@ -7,7 +9,7 @@ class PykovTests(unittest.TestCase):
         self.maxDiff = None
     def test_when_given_single_phrase_parses_correctly(self):
         source = ["The big bad dog was a big bad dog who was a big bad dog who was bad."]
-        self.markovGenerator.setSource(source)
+        self.markovGenerator.set_source(source)
         expected = [
             MarkovLink(["The", "big", "bad"], [PossibleFollowUp("dog", 1)]),
             MarkovLink(["big", "bad", "dog"], [PossibleFollowUp("was", 1), PossibleFollowUp("who", 2)]),
@@ -26,7 +28,7 @@ class PykovTests(unittest.TestCase):
             "This is the first phrase.",
             "This is the second phrase.  It shouldn't influence the first phrase."
         ]
-        self.markovGenerator.setSource(source)
+        self.markovGenerator.set_source(source)
         expected = [
             MarkovLink(["This", "is", "the"], [PossibleFollowUp("first", 1), PossibleFollowUp("second", 1)]),
             MarkovLink(["is", "the", "first"], [PossibleFollowUp("phrase.", 1)]),

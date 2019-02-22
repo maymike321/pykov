@@ -1,4 +1,6 @@
 from functools import reduce
+from markov_link import MarkovLink
+from possible_follow_up import PossibleFollowUp
 
 class Pykov:
     # Order: int, how many words prior are used to determine the next word
@@ -8,15 +10,15 @@ class Pykov:
     # Source: string[], the source to generate a markov chain off of.
     # Each "phrase" is an element in the array.  Phrases do not influence eachother in terms of probabilities.
     # If the source is a continuous block of text (such as a book), then the source should be one element.
-    def setSource(self, source):
+    def set_source(self, source):
         self.source = source
-        self.__processSource()
+        self.__process_source()
 
-    def __processSource(self):
+    def __process_source(self):
         for phrase in self.source:
-            self.__processPhrase(phrase.split())
+            self.__process_phrase(phrase.split())
 
-    def __processPhrase(self, phrase):
+    def __process_phrase(self, phrase):
         for wordPos in range(len(phrase) - self.order + 1):
             nextWord = None
             if wordPos + self.order < len(phrase):
@@ -38,7 +40,7 @@ class Pykov:
                 self.__links.append(markovLink)
                 
     # For debugging purposes only
-    def __printResult(self):
+    def __print_result(self):
         for link in self.__links:
             print("Link:")
             print("\tWords:")
@@ -48,24 +50,3 @@ class Pykov:
             for possibleFollowUp in link.possibleFollowUps:
                 print("\t\tWord: " + possibleFollowUp.word)
                 print("\t\tAmount: " + str(possibleFollowUp.amount))
-
-
-
-# Represents one link of a markov chain.  In this context it is a series of words followed by each word that follows it and with what probability.
-class MarkovLink:
-    def __init__(self, words, possibleFollowUps):
-        self.words = words
-        self.possibleFollowUps = possibleFollowUps
-    @property
-    def totalAmount(self):
-        return reduce(lambda a,b : a + b.amount, self.possibleFollowUps, 0)
-    def __eq__(self, other):
-        return self.words == other.words and self.possibleFollowUps == other.possibleFollowUps
-
-# Represents a possible follow up word to a series of words.  Has a word along with the number of times it is supposed to follow the next word.
-class PossibleFollowUp:
-    def __init__(self, word, amount = 1):
-        self.word = word
-        self.amount = amount
-    def __eq__(self, other):
-        return self.word == other.word and self.amount == other.amount
