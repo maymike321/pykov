@@ -7,6 +7,7 @@ class PykovTests(unittest.TestCase):
     def setUp(self):
         self.markovGenerator = Pykov(3)
         self.maxDiff = None
+
     def test_when_given_single_phrase_parses_correctly(self):
         source = ["The big bad dog was a big bad dog who was a big bad dog who was bad."]
         self.markovGenerator.set_source(source)
@@ -27,6 +28,7 @@ class PykovTests(unittest.TestCase):
         self.assertEqual(expectedLinks, self.markovGenerator._Pykov__links)
         self.assertEqual(expectedStartingWords, self.markovGenerator._Pykov__startingWords)
         self.assertEqual(expectedEndingWords, self.markovGenerator._Pykov__endingWords)
+
     def test_when_given_multiple_phrases_parses_correctly(self):
         source = [
             "This is the first phrase.",
@@ -49,6 +51,18 @@ class PykovTests(unittest.TestCase):
         expectedEndingWords = ["phrase."]
         self.assertEqual(expectedLinks, self.markovGenerator._Pykov__links)
         self.assertEqual(expectedStartingWords, self.markovGenerator._Pykov__startingWords)
+        self.assertEqual(expectedEndingWords, self.markovGenerator._Pykov__endingWords)
+
+    def test_recognized_all_ways_to_end_a_sentence(self):
+        source = ["This sentence has a period.  This sentence has an exclamation mark!  This sentence has a question mark?"]
+        self.markovGenerator.set_source(source)
+        expectedEndingWords = ["period.", "mark!", "mark?"]
+        self.assertEqual(expectedEndingWords, self.markovGenerator._Pykov__endingWords)
+
+    def test_when_phrase_ends_without_proper_ending_still_recognizes_ending_word(self):
+        source = ["This sentence doesn't have a period oops"]
+        self.markovGenerator.set_source(source)
+        expectedEndingWords = ["oops"]
         self.assertEqual(expectedEndingWords, self.markovGenerator._Pykov__endingWords)
 
 class MarkovLinkTests(unittest.TestCase):

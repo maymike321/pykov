@@ -1,6 +1,7 @@
 from functools import reduce
 from markov_link import MarkovLink
 from possible_follow_up import PossibleFollowUp
+import random
 
 class Pykov:
     # Order: int, how many words prior are used to determine the next word
@@ -8,6 +9,8 @@ class Pykov:
         self.__links = []
         self.__startingWords = []
         self.__endingWords = []
+        self.__sourceSet = False
+        self.__wordEndings = ('.', '!', '?')
         self.order = order
     # Source: string[], the source to generate a markov chain off of.
     # Each "phrase" is an element in the array.  Phrases do not influence eachother in terms of probabilities.
@@ -16,11 +19,33 @@ class Pykov:
         self.source = source
         self.__process_source()
 
+    def generate_word(self):
+        if not self.__sourceSet:
+            raise Exception('Source has not been set yet.')
+
+        startingWord = random.choice(self.__startingWords)
+        currentPhrase = random.choice(filter(lambda words: words[0] == startingWord, map(lambda links: links.words, self.__links)))
+        words = list(currentPhrase)
+        while currentPhrase[-1] not in self.__endingWords:
+            markovLink = next((link for link in self.__links if link.words == currentPhrase), None)
+            if markovLink is None:
+                raise Exception('Phrase %s was not found in the source but was assumed to be there.  This should never happen.  Yell at a developer somewhere.' % currentPhrase)
+                
+            nextWord = self.__get_random_next_word_from_link(markovLink)
+
+            words.append(nextWord)
+
+            currentPhrase = currentPhrase[1:]
+            currentPhrase.append(nextWord)
+
+        return ' '.join(words)
+
     def __process_source(self):
         self.__endingWords = []
         for phrase in self.source:
             self.__process_phrase(phrase.split())
         self.__get_starting_and_ending_words()
+        self.__sourceSet = True
 
     def __process_phrase(self, phrase):
         for wordPos in range(len(phrase) - self.order + 1):
@@ -49,15 +74,24 @@ class Pykov:
             for wordPos in range(len(splitPhrase)):
                 word = splitPhrase[wordPos]
                 if word not in self.__startingWords and self.__is_word_at_position_starting_word(wordPos, splitPhrase):
-                    self.__startingWords.append(splitPhrase[wordPos])
+                    self.__startingWords.append(word)
                 if word not in self.__endingWords and self.__is_word_at_position_ending_word(wordPos, splitPhrase):
-                    self.__endingWords.append(splitPhrase[wordPos])
+                    self.__endingWords.append(word)
 
     def __is_word_at_position_starting_word(self, wordPos, phrase):
         return wordPos == 0 or self.__is_word_at_position_ending_word(wordPos - 1, phrase)
     
     def __is_word_at_position_ending_word(self, wordPos, phrase):
-        return phrase[wordPos].endswith('.')
+        return wordPos == len(phrase) - 1 or phrase[wordPos].endswith(self.__wordEndings)
+
+    def __get_random_next_word_from_link(self, markovLink):
+        randInt = random.randint(1, markovLink.totalAmount)
+        currentInt = 0
+        for possibleFollowUp in markovLink.possibleFollowUps:
+            currentInt += possibleFollowUp.amount
+            if randInt <= currentInt:
+                return possibleFollowUp.word
+        return markovLink.possibleFollowUps[-1].word
                 
     # For debugging purposes only
     def __print_result(self):
