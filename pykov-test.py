@@ -64,6 +64,12 @@ class PykovTests(unittest.TestCase):
         self.markovGenerator.set_source(source)
         expectedEndingWords = ["oops"]
         self.assertEqual(expectedEndingWords, self.markovGenerator._Pykov__endingWords)
+    
+    def test_when_potential_starting_word_is_too_close_to_end_it_is_removed_as_a_starting_word(self):
+        source = ["This is sentence one.  Sentence two."]
+        self.markovGenerator.set_source(source)
+        expectedStartingWords = ["This"] #note "Sentence" is not expected
+        self.assertEqual(expectedStartingWords, self.markovGenerator._Pykov__startingWords)
 
 class MarkovLinkTests(unittest.TestCase):
     def test_calculates_total_amount_properly(self):

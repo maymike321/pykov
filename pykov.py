@@ -24,7 +24,11 @@ class Pykov:
             raise Exception('Source has not been set yet.')
 
         startingWord = random.choice(self.__startingWords)
-        currentPhrase = random.choice(filter(lambda words: words[0] == startingWord, map(lambda links: links.words, self.__links)))
+        try:
+            currentPhrase = random.choice(list(filter(lambda words: words[0] == startingWord, map(lambda links: links.words, self.__links))))
+        except:
+            print("Offending word is %s" % startingWord)
+            raise
         words = list(currentPhrase)
         while currentPhrase[-1] not in self.__endingWords:
             markovLink = next((link for link in self.__links if link.words == currentPhrase), None)
@@ -41,6 +45,7 @@ class Pykov:
         return ' '.join(words)
 
     def __process_source(self):
+        self.__startingWords = []
         self.__endingWords = []
         for phrase in self.source:
             self.__process_phrase(phrase.split())
@@ -79,7 +84,7 @@ class Pykov:
                     self.__endingWords.append(word)
 
     def __is_word_at_position_starting_word(self, wordPos, phrase):
-        return wordPos == 0 or self.__is_word_at_position_ending_word(wordPos - 1, phrase)
+        return wordPos <= len(phrase) - self.order and (wordPos == 0 or self.__is_word_at_position_ending_word(wordPos - 1, phrase))
     
     def __is_word_at_position_ending_word(self, wordPos, phrase):
         return wordPos == len(phrase) - 1 or phrase[wordPos].endswith(self.__wordEndings)

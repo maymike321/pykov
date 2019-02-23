@@ -1,3 +1,5 @@
+from functools import reduce
+
 # Represents one link of a markov chain.  In this context it is a series of words followed by each word that follows it and with what probability.
 class MarkovLink:
     def __init__(self, words, possibleFollowUps):
