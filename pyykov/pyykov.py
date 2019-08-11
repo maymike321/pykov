@@ -1,6 +1,6 @@
 from functools import reduce
-from markov_link import MarkovLink
-from possible_follow_up import PossibleFollowUp
+from .markov_link import MarkovLink
+from .possible_follow_up import PossibleFollowUp
 import random
 
 class Pyykov:

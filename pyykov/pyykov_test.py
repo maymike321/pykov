@@ -1,7 +1,7 @@
 import unittest
-from pyykov import Pyykov
-from markov_link import MarkovLink
-from possible_follow_up import PossibleFollowUp
+from .pyykov import Pyykov
+from .markov_link import MarkovLink
+from .possible_follow_up import PossibleFollowUp
 
 class PyykovTests(unittest.TestCase):
     def setUp(self):
