@@ -1,7 +1,7 @@
 from setuptools import find_packages, setup
 
 setup(name='pyykov',
-    version='0.1',
+    version='1.0',
     description='Markov generator for python.',
     url='https://github.com/maymike321/pyykov',
     author='Michael May',
