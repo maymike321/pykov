@@ -1,11 +1,11 @@
 import unittest
-from pykov import Pykov
+from pyykov import Pyykov
 from markov_link import MarkovLink
 from possible_follow_up import PossibleFollowUp
 
-class PykovTests(unittest.TestCase):
+class PyykovTests(unittest.TestCase):
     def setUp(self):
-        self.markovGenerator = Pykov(3)
+        self.markovGenerator = Pyykov(3)
         self.maxDiff = None
 
     def test_when_given_single_phrase_parses_correctly(self):
@@ -25,9 +25,9 @@ class PykovTests(unittest.TestCase):
         ]
         expectedStartingWords = ["The"]
         expectedEndingWords = ["bad."]
-        self.assertEqual(expectedLinks, self.markovGenerator._Pykov__links)
-        self.assertEqual(expectedStartingWords, self.markovGenerator._Pykov__startingWords)
-        self.assertEqual(expectedEndingWords, self.markovGenerator._Pykov__endingWords)
+        self.assertEqual(expectedLinks, self.markovGenerator._Pyykov__links)
+        self.assertEqual(expectedStartingWords, self.markovGenerator._Pyykov__startingWords)
+        self.assertEqual(expectedEndingWords, self.markovGenerator._Pyykov__endingWords)
 
     def test_when_given_multiple_phrases_parses_correctly(self):
         source = [
@@ -49,27 +49,27 @@ class PykovTests(unittest.TestCase):
         ]
         expectedStartingWords = ["This", "It"]
         expectedEndingWords = ["phrase."]
-        self.assertEqual(expectedLinks, self.markovGenerator._Pykov__links)
-        self.assertEqual(expectedStartingWords, self.markovGenerator._Pykov__startingWords)
-        self.assertEqual(expectedEndingWords, self.markovGenerator._Pykov__endingWords)
+        self.assertEqual(expectedLinks, self.markovGenerator._Pyykov__links)
+        self.assertEqual(expectedStartingWords, self.markovGenerator._Pyykov__startingWords)
+        self.assertEqual(expectedEndingWords, self.markovGenerator._Pyykov__endingWords)
 
     def test_recognized_all_ways_to_end_a_sentence(self):
         source = ["This sentence has a period.  This sentence has an exclamation mark!  This sentence has a question mark?"]
         self.markovGenerator.set_source(source)
         expectedEndingWords = ["period.", "mark!", "mark?"]
-        self.assertEqual(expectedEndingWords, self.markovGenerator._Pykov__endingWords)
+        self.assertEqual(expectedEndingWords, self.markovGenerator._Pyykov__endingWords)
 
     def test_when_phrase_ends_without_proper_ending_still_recognizes_ending_word(self):
         source = ["This sentence doesn't have a period oops"]
         self.markovGenerator.set_source(source)
         expectedEndingWords = ["oops"]
-        self.assertEqual(expectedEndingWords, self.markovGenerator._Pykov__endingWords)
+        self.assertEqual(expectedEndingWords, self.markovGenerator._Pyykov__endingWords)
     
     def test_when_potential_starting_word_is_too_close_to_end_it_is_removed_as_a_starting_word(self):
         source = ["This is sentence one.  Sentence two."]
         self.markovGenerator.set_source(source)
         expectedStartingWords = ["This"] #note "Sentence" is not expected
-        self.assertEqual(expectedStartingWords, self.markovGenerator._Pykov__startingWords)
+        self.assertEqual(expectedStartingWords, self.markovGenerator._Pyykov__startingWords)
 
 class MarkovLinkTests(unittest.TestCase):
     def test_calculates_total_amount_properly(self):

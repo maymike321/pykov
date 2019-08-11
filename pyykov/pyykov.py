@@ -3,7 +3,7 @@ from markov_link import MarkovLink
 from possible_follow_up import PossibleFollowUp
 import random
 
-class Pykov:
+class Pyykov:
     # Order: int, how many words prior are used to determine the next word
     def __init__(self, order):
         self.__links = []
@@ -19,16 +19,12 @@ class Pykov:
         self.source = source
         self.__process_source()
 
-    def generate_word(self):
+    def generate_phrase(self):
         if not self.__sourceSet:
             raise Exception('Source has not been set yet.')
 
         startingWord = random.choice(self.__startingWords)
-        try:
-            currentPhrase = random.choice(list(filter(lambda words: words[0] == startingWord, map(lambda links: links.words, self.__links))))
-        except:
-            print("Offending word is %s" % startingWord)
-            raise
+        currentPhrase = random.choice(list(filter(lambda words: words[0] == startingWord, map(lambda links: links.words, self.__links))))
         words = list(currentPhrase)
         while currentPhrase[-1] not in self.__endingWords:
             markovLink = next((link for link in self.__links if link.words == currentPhrase), None)
